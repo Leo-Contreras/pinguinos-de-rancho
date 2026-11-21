@@ -19,7 +19,7 @@ export const team = {
 // Recomendado: PNG con fondo transparente, 800x1000 px, jugador de cintura para arriba.
 export const roster = [
   { role: 'Top',     name: 'Jared Rivas', riotId: 'MonsterVerdeLoco#Cele', real: '', photo: '/players/jared.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
-  { role: 'Jungla',  name: 'Leo', riotId: 'Leo#elpep',         real: '', photo: '/players/leo.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'Jungla',  name: 'Leo', riotId: 'Leo#elpep',         real: '', photo: '/players/leo.gif', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
   { role: 'Mid',     name: 'Koven', riotId: 'Science Fiction#music',       real: '', photo: '/players/koven.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
   { role: 'ADC',     name: 'VVolf', riotId: 'VVolf#TRASH',       real: '', photo: '/players/vvolf.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
   { role: 'Support', name: 'ALUCRITA', riotId: 'A L U C R l T A#1907',    real: '', photo: '/players/alucrita.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
