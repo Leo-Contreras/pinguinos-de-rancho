@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { team, roster, matches, news, sponsors, gallery, profileLinks, multiSearch, schedule } from '../data/team';
+const fmt = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+const upcoming = matches.filter(m => !m.result).sort((a, b) => a.date.localeCompare(b.date));
+const past = matches.filter(m => m.result).sort((a, b) => b.date.localeCompare(a.date));
+---
+<Layout>
+  <header class="nav">
+    <a class="brand" href="#inicio"><img src="/logo.png" alt="" width="40" height="40" /><span>{team.name}</span></a>
+    <button class="burger" aria-label="Abrir menú" aria-expanded="false">Menú</button>
+    <nav aria-label="Principal">
+      <a href="#plantilla">Plantilla</a>
+      <a href="#historial">Historial</a>
+      <a href="#partidos">Partidos</a>
+      <a href="#scrims">Scrims</a>
+      <a href="#noticias">Noticias</a>
+      <a href="#patrocinadores">Patrocinadores</a>
+      <a class="btn-sm" href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio" class="hero">
+      <div class="hero-text">
+        <h1>Pingüinos<br />de Rancho</h1>
+        <p>{team.tagline}</p>
+        <div class="hero-cta">
+          <a class="btn" href="#plantilla">Conoce la plantilla</a>
+          <a class="btn ghost" href="#scrims">Agendar scrim</a>
+        </div>
+      </div>
+      <img class="hero-logo" src="/logo.png" alt="Logo de Pingüinos de Rancho Esports" width="520" height="520" />
+    </section>
+
+    <section id="plantilla" class="section">
+      <div class="head"><h2>Plantilla</h2><p>Cinco jugadores, un solo rancho. Temporada 2026.</p></div>
+      <div class="roster">
+        {roster.map(p => (
+          <article class="player">
+            <div class="shot">
+              {p.photo
+                ? <img src={p.photo} alt={`${p.name}, ${p.role}`} loading="lazy" />
+                : <div class="ph" aria-hidden="true"><span>{p.name.slice(0, 1)}</span><small>Foto pendiente</small></div>}
+              <span class="role">{p.role}</span>
+            </div>
+            <div class="info">
+              <h3>{p.name}</h3>
+              {p.real && <p class="real">{p.real}</p>}
+              <p class="bio">{p.bio}</p>
+              <p class="champs">{p.champs.join(', ')}</p>
+              <a class="opgg" href={profileLinks(p.riotId).opgg} rel="noopener">Ver historial en op.gg</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="historial" class="section alt">
+      <div class="head"><h2>Historial de juego</h2><p>Rango, partidas y campeones de cada jugador. Servidor LAN.</p></div>
+      <ul class="summoners">
+        {roster.map(p => { const l = profileLinks(p.riotId); return (
+          <li>
+            <div class="who"><strong>{p.name}</strong><span>{p.role}</span></div>
+            <code>{p.riotId}</code>
+            <div class="links">
+              <a href={l.opgg} rel="noopener">op.gg</a>
+              <a href={l.ugg} rel="noopener">u.gg</a>
+              <a href={l.log} rel="noopener">League of Graphs</a>
+            </div>
+          </li>
+        );})}
+      </ul>
+      <div class="multi"><a class="btn" href={multiSearch} rel="noopener">Ver los 5 juntos en op.gg</a></div>
+    </section>
+
+    <section id="partidos" class="section">
+      <div class="head"><h2>Partidos</h2><p>Calendario y últimos resultados.</p></div>
+      <div class="cols">
+        <div>
+          <h3 class="sub">Próximos</h3>
+          <ul class="matches">
+            {upcoming.map(m => (
+              <li><time datetime={m.date}><b>{fmt(m.date)}</b><small>{m.time}</small></time>
+                <div><strong>vs {m.rival}</strong><span>{m.event}</span></div></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="sub">Resultados</h3>
+          <ul class="matches">
+            {past.map(m => (
+              <li><time datetime={m.date}><b>{fmt(m.date)}</b></time>
+                <div><strong>vs {m.rival}</strong><span>{m.event}</span></div><em>{m.result}</em></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="scrims" class="section alt" data-config={JSON.stringify(schedule)}>
+      <div class="head"><h2>Agenda un scrim</h2><p>Disponibles lunes, martes y jueves de 7:00 a 10:00 p. m. (hora CDMX), formato Bo3.</p></div>
+      <div class="booking">
+        <div class="cal">
+          <div class="cal-bar">
+            <button type="button" id="prev" aria-label="Mes anterior">‹</button>
+            <h3 id="monthLabel" aria-live="polite"></h3>
+            <button type="button" id="next" aria-label="Mes siguiente">›</button>
+          </div>
+          <div class="cal-grid cal-head" aria-hidden="true"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          <div class="cal-grid" id="calDays"></div>
+          <p class="legend"><i class="k open"></i>Disponible <i class="k pending"></i>Solicitado <i class="k booked"></i>Ocupado</p>
+          <p class="avail-note" id="availNote" role="status"></p>
+        </div>
+
+        <form class="panel" id="bookForm">
+          <p class="picked" id="picked">Elige un día disponible en el calendario.</p>
+          <p class="tz" id="tz"></p>
+          <label>Nombre de tu equipo<input name="team" required autocomplete="organization" /></label>
+          <label>Elo del equipo<input name="elo" placeholder="Ej. Esmeralda 2 – Diamante 4" required /></label>
+          <label>Contacto (Discord o correo)<input name="contact" required /></label>
+          <label>Notas<textarea name="notes" rows="2" placeholder="Opcional"></textarea></label>
+          <div class="actions">
+            <button class="btn" type="submit" id="send" disabled>Enviar solicitud</button>
+            <button class="btn ghost" type="button" id="copy" disabled>Copiar mensaje</button>
+          </div>
+          <p class="hint" id="hint">La solicitud se abre en tu correo ya redactada. También puedes copiarla y mandarla por Discord.</p>
+          <a class="discord" href={team.discord} target="_blank" rel="noopener">Entrar a nuestro Discord</a>
+        </form>
+      </div>
+    </section>
+
+    <section id="noticias" class="section">
+      <div class="head"><h2>Noticias</h2><p>Lo último del equipo.</p></div>
+      <div class="news">
+        {news.map(n => (
+          <article>
+            <div class="thumb">{n.image ? <img src={n.image} alt="" loading="lazy" /> : <img class="mark" src="/logo.png" alt="" />}</div>
+            <time datetime={n.date}>{fmt(n.date)}</time>
+            <h3>{n.title}</h3>
+            <p>{n.text}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="galeria" class="section alt">
+      <div class="head"><h2>Galería</h2><p>Eventos, bootcamps y momentos del equipo.</p></div>
+      <div class="gallery">
+        {gallery.map((g, i) => g
+          ? <img src={g} alt={`Foto ${i + 1} del equipo`} loading="lazy" />
+          : <div class="slot">Tu foto aquí</div>)}
+      </div>
+    </section>
+
+    <section id="patrocinadores" class="section">
+      <div class="head"><h2>Patrocinadores</h2><p>Marcas que creen en el rancho.</p></div>
+      <ul class="sponsors">
+        {sponsors.map(s => (
+          <li><a href={s.url}>{s.logo ? <img src={s.logo} alt={s.name} /> : <span>{s.name}</span>}</a></li>
+        ))}
+      </ul>
+    </section>
+  </main>
+
+  <footer id="contacto">
+    <div class="foot">
+      <div>
+        <img src="/logo.png" alt="" width="72" height="72" />
+        <p>{team.name} Esports</p>
+        <a href={`mailto:${team.email}`}>{team.email}</a>
+      </div>
+      <ul>{team.socials.map(s => <li><a href={s.url} rel="noopener">{s.name}</a></li>)}</ul>
+    </div>
+    <p class="copy">© {new Date().getFullYear()} {team.name}. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const b = document.querySelector('.burger')!;
+    const n = document.querySelector('.nav nav')!;
+    b.addEventListener('click', () => { const o = n.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+    n.addEventListener('click', e => { if ((e.target as HTMLElement).tagName === 'A') { n.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); } });
+  </script>
+  <script>
+    const root = document.getElementById('scrims')!;
+    const cfg = JSON.parse(root.dataset.config!);
+    const daysEl = document.getElementById('calDays')!;
+    const labelEl = document.getElementById('monthLabel')!;
+    const pickedEl = document.getElementById('picked')!;
+    const tzEl = document.getElementById('tz')!;
+    const form = document.getElementById('bookForm') as HTMLFormElement;
+    const sendBtn = document.getElementById('send') as HTMLButtonElement;
+    const copyBtn = document.getElementById('copy') as HTMLButtonElement;
+    const hintEl = document.getElementById('hint')!;
+    const noteEl = document.getElementById('availNote')!;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let view = new Date(today.getFullYear(), today.getMonth(), 1);
+    const kind = 'scrim';
+    let selected: string | null = null;
+    const conf = () => cfg[kind];
+
+    let avail = { blocked: [] as string[], open: [] as string[], pending: [] as string[], confirmed: [...cfg.scrim.booked] as string[] };
+    let status: 'loading' | 'ready' | 'error' = cfg.api ? 'loading' : 'ready';
+
+    async function load() {
+      if (!cfg.api) return;
+      try {
+        const j = await (await fetch(cfg.api, { cache: 'no-store' })).json();
+        avail = { blocked: j.blocked || [], open: j.open || [], pending: j.pending || [], confirmed: [...(j.confirmed || []), ...cfg.scrim.booked] };
+        status = 'ready'; noteEl.textContent = '';
+      } catch {
+        status = 'error';
+        noteEl.textContent = 'No pudimos cargar la disponibilidad. Escríbenos por Discord para agendar.';
+      }
+      render(); update();
+    }
+
+    function render() {
+      const y = view.getFullYear(), m = view.getMonth();
+      labelEl.textContent = new Date(y, m, 1).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+      const offset = (new Date(y, m, 1).getDay() + 6) % 7; // semana empieza en lunes
+      const total = new Date(y, m + 1, 0).getDate();
+      daysEl.innerHTML = '';
+      for (let i = 0; i < offset; i++) daysEl.appendChild(document.createElement('span'));
+      for (let d = 1; d <= total; d++) {
+        const date = new Date(y, m, d);
+        const key = `${y}-${pad(m + 1)}-${pad(d)}`;
+        const dow = date.getDay();
+        const base = (conf().days.includes(dow) || avail.open.includes(key)) && date >= today && !avail.blocked.includes(key);
+        const taken = base ? (avail.confirmed.includes(key) ? 'booked' : avail.pending.includes(key) ? 'pending' : '') : '';
+        const free = base && !taken && status === 'ready';
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = String(d);
+        b.className = 'day' + (free ? ' open' : '') + (taken ? ' ' + taken : '') + (key === selected ? ' sel' : '');
+        b.disabled = !free;
+        b.setAttribute('aria-pressed', String(key === selected));
+        b.setAttribute('aria-label', date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' }) +
+          (taken === 'booked' ? ', ocupado' : taken === 'pending' ? ', solicitado, pendiente de confirmación' : free ? ', disponible' : ''));
+        b.addEventListener('click', () => { selected = key; render(); update(); });
+        daysEl.appendChild(b);
+      }
+    }
+
+    const hm = (t: string) => t.split(':').map(Number);
+    const fmtMx = (t: string) => { const [h, mi] = hm(t); const s = h >= 12 ? 'p. m.' : 'a. m.'; return `${((h + 11) % 12) + 1}:${pad(mi)} ${s}`; };
+
+    function summary() {
+      if (!selected) return null;
+      const [y, mo, d] = selected.split('-').map(Number);
+      const c = conf();
+      const dateTxt = new Date(y, mo - 1, d).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+      const [sh, sm] = hm(c.start), [eh, em] = hm(c.end);
+      const s = new Date(Date.UTC(y, mo - 1, d, sh - cfg.utcOffset, sm));
+      const e = new Date(Date.UTC(y, mo - 1, d, eh - cfg.utcOffset, em));
+      const local = new Intl.DateTimeFormat('es-MX', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+      const mx = `${fmtMx(c.start)} a ${fmtMx(c.end)} (CDMX)`;
+      return { dateTxt, mx, local: `${local.format(s)} a ${local.format(e)}`, c };
+    }
+
+    function update() {
+      const s = summary();
+      sendBtn.disabled = copyBtn.disabled = !s;
+      if (!s) { pickedEl.textContent = 'Elige un día disponible en el calendario.'; tzEl.textContent = ''; return; }
+      pickedEl.textContent = `${s.dateTxt}, ${s.mx}. Formato: ${s.c.format}.`;
+      tzEl.textContent = `En tu zona horaria: ${s.local}`;
+    }
+
+    function message() {
+      const s = summary()!; const f = new FormData(form);
+      return [`Solicitud de ${s.c.label.toLowerCase()} para Pingüinos de Rancho`, '',
+        `Equipo: ${f.get('team')}`, `Elo: ${f.get('elo')}`, `Contacto: ${f.get('contact')}`, '',
+        `Fecha: ${s.dateTxt}`, `Horario: ${s.mx}`, `Formato: ${s.c.format}`,
+        f.get('notes') ? `\nNotas: ${f.get('notes')}` : ''].join('\n');
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const day = selected;
+      if (!day) return;
+      const f = new FormData(form);
+      if (!cfg.api) {
+        const subj = `${conf().label} ${day} - ${f.get('team')}`;
+        location.href = `mailto:${cfg.email}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(message())}`;
+        hintEl.textContent = 'Se abrió tu correo con la solicitud. Envíala para que la confirmemos.';
+        return;
+      }
+      sendBtn.disabled = true; hintEl.textContent = 'Enviando solicitud…';
+      try {
+        const res = await (await fetch(cfg.api, {
+          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ date: day, team: f.get('team'), elo: f.get('elo'), contact: f.get('contact'), notes: f.get('notes') }),
+        })).json();
+        if (res.ok) {
+          avail.pending.push(day); selected = null; form.reset(); render(); update();
+          hintEl.textContent = 'Solicitud recibida. El día queda apartado y te confirmamos por Discord o correo.';
+        } else if (res.reason === 'taken') {
+          selected = null; await load(); update();
+          hintEl.textContent = 'Ese día acaba de ser solicitado por otro equipo. Elige otro.';
+        } else { throw new Error(res.reason); }
+      } catch {
+        update();
+        hintEl.textContent = 'No pudimos enviar la solicitud. Intenta de nuevo o escríbenos por Discord.';
+      }
+    });
+    copyBtn.addEventListener('click', async () => {
+      if (!form.reportValidity()) return;
+      try { await navigator.clipboard.writeText(message()); hintEl.textContent = 'Mensaje copiado. Pégalo en nuestro Discord.'; }
+      catch { hintEl.textContent = 'No se pudo copiar. Usa el botón Enviar solicitud.'; }
+    });
+    document.getElementById('prev')!.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
+    document.getElementById('next')!.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); render(); });
+    if (cfg.api) { noteEl.textContent = 'Cargando disponibilidad…'; hintEl.textContent = 'Al enviar, el día queda apartado y te confirmamos por Discord o correo.'; }
+    render(); load();
+  </script>
+</Layout>
