@@ -18,11 +18,11 @@ export const team = {
 // Para agregar foto: guarda la imagen en /public/players/ y escribe photo: '/players/leo.png'
 // Recomendado: PNG con fondo transparente, 800x1000 px, jugador de cintura para arriba.
 export const roster = [
-  { role: 'Top',     name: 'Jared Rivas', riotId: 'MonsterVerdeLoco#Cele', real: '', photo: '/players/jared.jpeg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
-  { role: 'Jungla',  name: 'Leo', riotId: 'Leo#elpep',         real: '', photo: '/players/leo.jpeg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
-  { role: 'Mid',     name: 'Koven', riotId: 'Science Fiction#music',       real: '', photo: '/players/koven.jpeg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
-  { role: 'ADC',     name: 'VVolf', riotId: 'VVolf#TRASH',       real: '', photo: '/players/vvolf.jpeg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
-  { role: 'Support', name: 'ALUCRITA', riotId: 'A L U C R l T A#1907',    real: '', photo: '/players/alucrita.jpeg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'Top',     name: 'Jared Rivas', riotId: 'MonsterVerdeLoco#Cele', real: '', photo: '/players/jared.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'Jungla',  name: 'Leo', riotId: 'Leo#elpep',         real: '', photo: '/players/leo.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'Mid',     name: 'Koven', riotId: 'Science Fiction#music',       real: '', photo: '/players/koven.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'ADC',     name: 'VVolf', riotId: 'VVolf#TRASH',       real: '', photo: '/players/vvolf.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
+  { role: 'Support', name: 'ALUCRITA', riotId: 'A L U C R l T A#1907',    real: '', photo: '/players/alucrita.jpg', champs: ['Campeón 1', 'Campeón 2', 'Campeón 3'], bio: 'Escribe aquí una frase corta sobre el jugador.' },
 ];
 
 export const matches = [
