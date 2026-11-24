@@ -9,13 +9,14 @@ const past = matches.filter(m => m.result).sort((a, b) => b.date.localeCompare(a
   <header class="nav">
     <a class="brand" href="#inicio"><img src="/logo.png" alt="" width="40" height="40" /><span>{team.name}</span></a>
     <button class="burger" aria-label="Abrir menú" aria-expanded="false">Menú</button>
-    <nav aria-label="Principal">
+      <nav aria-label="Principal">
       <a href="#plantilla">Plantilla</a>
       <a href="#historial">Historial</a>
       <a href="#partidos">Partidos</a>
       <a href="#scrims">Scrims</a>
       <a href="#noticias">Noticias</a>
       <a href="#patrocinadores">Patrocinadores</a>
+      <a href="/banner">Banner</a>
       <a class="btn-sm" href="#contacto">Contacto</a>
     </nav>
   </header>
@@ -25,9 +26,10 @@ const past = matches.filter(m => m.result).sort((a, b) => b.date.localeCompare(a
       <div class="hero-text">
         <h1>Pingüinos<br />de Rancho</h1>
         <p>{team.tagline}</p>
-        <div class="hero-cta">
+               <div class="hero-cta">
           <a class="btn" href="#plantilla">Conoce la plantilla</a>
           <a class="btn ghost" href="#scrims">Agendar scrim</a>
+          <a class="btn ghost" href="/banner">Haz tu banner</a>
         </div>
       </div>
       <img class="hero-logo" src="/logo.png" alt="Logo de Pingüinos de Rancho Esports" width="520" height="520" />
